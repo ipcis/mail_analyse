@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis Results</title>
+    <style>
+        body, h1, h2, h3, h4, h5, h6 {
+          font-family: Arial;
+        }
+        </style>
+</head>
+<body>
+    <h1>Analysis Results</h1>
+    <code><strong>UID:</strong> {{ msguid }}</code>
+    <code><strong>From:</strong> {{ sender }}</code>
+    <code><strong>To:</strong> {{ to }}</code>
+    <code><strong>Subject:</strong> {{ subject }}</code>
+    <hr>
+    <h2>Header</h2>
+    <code>{{ header }}</code>
+    <hr>
+    <h2>Body</h2>
+    <code>{{ body }}</code>
+    <hr>
+    <h2>Attachments</h2>
+    <code>{{ attachments }}</code>
+    <hr>
+    <h2>Body (URLs)</h2>
+    <code>{{ urls }}</code>
+    <hr>
+    <h2>Body (UNCs)</h2>
+    <code>{{ uncs }}</code>
+    <hr>
+    <h2>Body (IPs)</h2>
+    <code>{{ ips }}</code>
+    <hr>
+    <h2>Header (E-Mails)</h2>
+    <code>{{ emailsh }}</code>
+    <hr>
+    <h2>Header (IPs)</h2>
+    <code>{{ ipsh }}</code>
+
+
+</body>
+</html>
