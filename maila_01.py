@@ -28,7 +28,7 @@ Gewuenschte Funktionen:
 - ZIP entpacken? ISO, 7z? DOC, DOCx, DOCM, 
 - MD5 check
 - IoC check
-- Strings ueber Anhaenge
+- strings ueber anhaenge
 
 """
 
@@ -227,11 +227,15 @@ def upload():
     attachments_out = extract_attachments(msg, analyse_out_dir)
 
 
+    
+    #print(msg.htmlBody)
+
+    full_body = str(msg.body) + str(msg.htmlBody)
 
 
-    msgbodyurls = search_urls(msg.body)
-    msgbodyuncs = search_uncs(msg.body)
-    msgbodyips = search_ips(msg.body)
+    msgbodyurls = search_urls(full_body)
+    msgbodyuncs = search_uncs(full_body)
+    msgbodyips = search_ips(full_body)
 
     msgheaderemails = search_emails(extract_header(msg))
     msgheaderips = search_ips(extract_header(msg))
