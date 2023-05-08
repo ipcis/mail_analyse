@@ -28,6 +28,7 @@ Gewuenschte Funktionen:
 - ZIP entpacken? ISO, 7z? DOC, DOCx, DOCM, 
 - MD5 check
 - IoC check
+- Strings ueber Anhaenge
 
 """
 
