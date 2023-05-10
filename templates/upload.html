@@ -2,8 +2,15 @@
 <html>
   <head>
     <title>Upload MSG File</title>
+    <style>
+      body, h1, h2, h3, h4, h5, h6 {
+        font-family: Arial;
+      }
+      </style>
   </head>
   <body>
+    <img src="{{url_for('static', filename='logo.png')}}" alt="ITDZ Berlin Logo" width="300" height="100">
+    <br><br>
     <h1>Upload MSG File</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
       <input type="file" name="msg"><br><br>

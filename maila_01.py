@@ -10,9 +10,11 @@ import yara
 import re, io, os, uuid
 from fnmatch import fnmatch
 import magic # python-magic-bin==0.4.14
+import requests
 
 
 
+vt_api_key = ""
 
 
 
@@ -26,9 +28,9 @@ Gewuenschte Funktionen:
 - Scoring System
 - PDF to Image: https://www.geeksforgeeks.org/convert-pdf-to-image-using-python/
 - ZIP entpacken? ISO, 7z? DOC, DOCx, DOCM, 
-- MD5 check
 - IoC check
 - strings ueber anhaenge
+
 
 """
 
@@ -167,6 +169,58 @@ def md5(fname):
     return hash_md5.hexdigest()
 
 
+
+
+
+def check_hash(hash_to_check, api_key):
+    """
+    Check a file hash against the VirusTotal API and return the number of positive detections.
+    """
+    # Set the API endpoint URL
+    url = 'https://www.virustotal.com/api/v3/files/' + hash_to_check
+
+    # Set the headers with the API key
+    headers = {'x-apikey': api_key}
+
+    # Make the API request
+    response = requests.get(url, headers=headers)
+
+    # Get the response JSON data
+    data = response.json()
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Check the number of positive detections
+        positives = data['data']['attributes']['last_analysis_stats']['malicious']
+        return positives
+    else:
+        return None
+
+
+def check_url(url_to_check, api_key):
+    """
+    Check a URL against the VirusTotal API and return the result report.
+    """
+    # Set the API endpoint URL
+    url_vt = 'https://www.virustotal.com/api/v3/urls/' + url_to_check
+
+    # Set the headers with the API key
+    headers = {'x-apikey': api_key}
+
+    # Make the API request
+    response = requests.get(url_vt, headers=headers)
+
+    # Get the response JSON data
+    data = response.json()
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Return the result report
+        return data
+    else:
+        return None
+
+
 def extract_attachments(msg, out_dir):
     print("[+] extract attachments...")
 
@@ -192,8 +246,12 @@ def extract_attachments(msg, out_dir):
                         yara_data = (f"Suspicious file found: {name} (matched rule: {match.rule})")
                         data_out.append(yara_data)
 
+                
+                md5_hash = md5(os.path.join(path, name))
+                md5_vt_check = check_hash(md5_hash, vt_api_key)
 
-                data = "FILENAME:", name, " FILETYPE:", magic.from_file(os.path.join(path, name)), " MD5:", md5(os.path.join(path, name))
+
+                data = "FILENAME:", name, " FILETYPE:", magic.from_file(os.path.join(path, name)), " MD5:", md5_hash, " VT-Hash-Check:", str(md5_vt_check)
                 data_out.append(data)
     return data_out
 
@@ -241,6 +299,27 @@ def upload():
     msgheaderips = search_ips(extract_header(msg))
 
     msgheader = extract_header(msg)
+
+
+    """
+    vt_url_check = []
+    for turl in msgbodyurls:
+        url_vt_check = check_url(turl, vt_api_key)
+        vt_url_check.append(url_vt_check)
+    """
+
+
+
+    #clear arrays - uniqu
+    msgbodyurls = list(set(msgbodyurls))
+    msgbodyuncs = list(set(msgbodyuncs))
+    msgbodyips = list(set(msgbodyips))
+    msgheaderemails = list(set(msgheaderemails))
+    msgheaderips = list(set(msgheaderips))
+
+
+    #msgbodyurls = msgbodyurls + vt_url_check
+
 
     #return 'File uploaded successfully.'
     return render_template('result.html', sender=msg.sender, to=msg.to, subject=msg.subject, msguid=uid, header=msgheader, body=msg.body, attachments=attachments_out, urls=msgbodyurls, uncs=msgbodyuncs, ips=msgbodyips, emailsh=msgheaderemails, ipsh=msgheaderips)
